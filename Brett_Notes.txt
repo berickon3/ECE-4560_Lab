@@ -1,0 +1,3 @@
+Setting up UV and Ruff was difficult, but this effort should make it simpler for others.
+Key thing to remember: Everything is run through uv. had to run setup with
+    uv run lerobot-setup-motors --robot.type=so101_follower --robot.port=COM7
