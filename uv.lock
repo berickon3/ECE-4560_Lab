@@ -424,6 +424,11 @@ dependencies = [
     { name = "ruff" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "lerobot", extras = ["feetech"], specifier = ">=0.3.3" },
@@ -431,6 +436,9 @@ requires-dist = [
     { name = "pylance", specifier = ">=0.34.0" },
     { name = "ruff", specifier = ">=0.12.11" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.12.11" }]
 
 [[package]]
 name = "einops"
