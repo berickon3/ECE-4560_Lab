@@ -3,7 +3,15 @@ Key thing to remember: Everything is run through uv. had to run setup with
     uv run lerobot-setup-motors --robot.type=so101_follower --robot.port=COM7
 Performed calibration with:
     uv run lerobot-calibrate --robot.type=so101_follower --robot.port=COM7 --robot.id=Jack_the_Gripper
-
+Performed teleoperation:
+    noted that calibration of follower (done at the lab) was not complete range of motion for the elbow. 
+    otherwise, successful
+    Teleoperation noted that there was not a calibration available for the leader arm and forced me to perform a calibration
+    The script for calibration and teleoperation does not give an option for saving the calibration to a particular location, nor does it ask you where one might be.
+    
 TODO:
-    Do teleoperation
     Figure out how to manipulate individual joints
+
+On my laptop:
+    COM4 is follower
+    COM7 is leader
