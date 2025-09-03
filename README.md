@@ -1,22 +1,19 @@
-To setup:
-Create repository folder
-Open repository location (AVOID INSTALLING IN ONEDRIVE)
-Right click, open command window in this directory
-IN WINDOWS POWERSHELL -
-    code .
-Then, in VS code Powershell terminal
-    Set-ExecutionPolicy RemoteSigned -scope CurrentUser      
-    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+# ECE-4560 Lab
 
-Restart Visual Studio Code
-IN VSCODE POWERSHELL
-    uv sync
-UV will then install required packages and make a virtual environment
+## Setup
 
-Within VS Code
-    CTRL-SHIFT-P to open the command bar
-    Python: Select Interpreter
+After cloning the repository, open a PowerShell window in the project root and run:
 
-Select the option that is .\venv\Scripts\python.exe which should be python 3.10.18
+```powershell
+./setup.ps1
+```
 
-This should fully set up the environment and python to be interpreted correctly. Scripts and commands should be run appended to 'uv run'
+The script will:
+
+- Set the PowerShell execution policy for the current user.
+- Install [uv](https://docs.astral.sh/uv/) if it is not already installed.
+- Create a virtual environment and install all project dependencies.
+
+After the script finishes, open Visual Studio Code and run `Python: Select Interpreter` from the command palette. Choose the interpreter at `.\venv\Scripts\python.exe`.
+
+All project commands should then be run prefixed with `uv run`.
