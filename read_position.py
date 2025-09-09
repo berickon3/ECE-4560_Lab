@@ -4,8 +4,8 @@ import time
 from so101_utils import load_calibration, setup_motors
 
 # CONFIGURATION VARIABLES
-PORT_ID = "/dev/tty.usbmodem5A460848371" # REPLACE WITH YOUR PORT! 
-ROBOT_NAME = "follower-1"
+PORT_ID = "COM4" # REPLACE WITH YOUR PORT! 
+ROBOT_NAME = "Jack_the_Gripper" # REPLACE WITH YOUR ROBOT NAME!
 
 # Setup calibration and motor bus
 calibration = load_calibration(ROBOT_NAME)

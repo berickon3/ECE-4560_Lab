@@ -15,7 +15,7 @@ def load_calibration(ROBOT_NAME) -> None:
     Args:
         fpath (Path | None): Optional path to the calibration file. Defaults to `self.calibration_fpath`.
     """
-    fpath = Path(f'calibration_files/{ROBOT_NAME}.json')
+    fpath = Path(f'Robot Calibration Files/{ROBOT_NAME}.json')
     with open(fpath) as f, draccus.config_type("json"):
         calibration = draccus.load(dict[str, MotorCalibration], f)
         return calibration
