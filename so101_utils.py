@@ -41,10 +41,10 @@ def setup_motors(calibration, PORT_ID):
         for motor in bus.motors:
             bus.write("Operating_Mode", motor, OperatingMode.POSITION.value)
             # Set P_Coefficient to lower value to avoid shakiness (Default is 32)
-            bus.write("P_Coefficient", motor, 16)
+            bus.write("P_Coefficient", motor, 20)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
             bus.write("I_Coefficient", motor, 0)
-            bus.write("D_Coefficient", motor, 32) 
+            bus.write("D_Coefficient", motor, 5)
     return bus
 
 def move_to_pose(bus, desired_position, duration):

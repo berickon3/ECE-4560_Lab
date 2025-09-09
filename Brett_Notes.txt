@@ -28,3 +28,10 @@ The utils script contains two pasted sections, with a total of 4 helper function
     - setup_motors
     - move_to_pose
     - hold_position
+
+Ran the calibration again
+Ran the script to read position - Annoyingly, it continously prints to the terminal. 
+Verified that Zero position matches that shown in the course website
+Script for motion between start and desired position works, but still has jerky behavior
+Current best values
+P: 30, D: 5
