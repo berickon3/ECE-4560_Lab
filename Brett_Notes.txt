@@ -2,7 +2,7 @@ Setting up UV and Ruff was difficult, but this effort should make it simpler for
 Key thing to remember: Everything is run through uv. had to run setup with
     uv run lerobot-setup-motors --robot.type=so101_follower --robot.port=COM7
 Performed calibration with:
-    uv run lerobot-calibrate --robot.type=so101_follower --robot.port=COM7 --robot.id=Jack_the_Gripper
+    uv run lerobot-calibrate --robot.type=so101_follower --robot.port=COM4 --robot.id=Jack_the_Gripper
 Performed teleoperation:
     noted that calibration of follower (done at the lab) was not complete range of motion for the elbow. 
     otherwise, successful
@@ -15,3 +15,23 @@ TODO:
 On my laptop:
     COM4 is follower
     COM7 is leader
+
+Homework 3 - Lab Portion
+
+Copy and pasted scripts directly from course website
+    - set_position.py
+    - read_position.py
+    - so101_utils.py
+
+The utils script contains two pasted sections, with a total of 4 helper functions
+    - load_calibration
+    - setup_motors
+    - move_to_pose
+    - hold_position
+
+Ran the calibration again
+Ran the script to read position - Annoyingly, it continously prints to the terminal. 
+Verified that Zero position matches that shown in the course website
+Script for motion between start and desired position works, but still has jerky behavior
+Current best values
+P: 30, D: 5
