@@ -23,10 +23,10 @@ move_time = 2.0  # seconds to reach desired position
 hold_time = 2.0  # total time to hold at 
 
 # ------------------------
-calibration = load_calibration(ROBOT_NAME);
-bus = setup_motors(calibration, PORT_ID);
+calibration = load_calibration(ROBOT_NAME)
+bus = setup_motors(calibration, PORT_ID)
 starting_pose = bus.sync_read("Present_Position")
-move_to_pose(bus, desired_position, move_time);
-hold_position(bus, hold_time);
-move_to_pose(bus, starting_pose, move_time);
-bus.disable_torque();
+move_to_pose(bus, desired_position, move_time)
+hold_position(bus, hold_time)
+move_to_pose(bus, starting_pose, move_time)
+bus.disable_torque()

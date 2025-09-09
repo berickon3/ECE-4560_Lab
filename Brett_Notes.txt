@@ -24,7 +24,7 @@ Copy and pasted scripts directly from course website
     - so101_utils.py
 
 The utils script contains two pasted sections, with a total of 4 helper functions
-    - load_configuration
+    - load_calibration
     - setup_motors
     - move_to_pose
     - hold_position
