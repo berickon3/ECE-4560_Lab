@@ -70,8 +70,8 @@ def move_to_pose(bus, desired_position, duration):
         bus.sync_write("Goal_Position", position_dict, normalize=True)
 
         # (Optional) Read back
-        present_pos = bus.sync_read("Present_Position")
-        print(present_pos)
+        #present_pos = bus.sync_read("Present_Position")
+        #print(present_pos)
 
         time.sleep(0.02)  # 50 Hz loop
     
