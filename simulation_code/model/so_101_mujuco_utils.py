@@ -19,6 +19,14 @@ def convert_to_list(dictionary):
              dictionary['wrist_roll'] * 3.14159 / 180.0,
              dictionary['gripper'] * 3.14159 / 100.0 ]
 
+def set_initial_pose(d, position_dict):
+    pos = convert_to_list(position_dict)
+    d.qpos = pos
+    
+def send_position_command(d, position_dict):
+    pos = convert_to_list(position_dict)
+    d.ctrl = pos
+
 def move_to_pose(m, d, viewer, desired_position, duration):
     start_time = time.time()
     starting_pose = d.qpos.copy()
