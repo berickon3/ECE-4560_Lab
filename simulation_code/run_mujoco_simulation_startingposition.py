@@ -1,7 +1,6 @@
 import time
 import mujoco
 import mujoco.viewer
-import numpy as np
 from so101_mujoco_utils import set_initial_pose, send_position_command
 import os
 

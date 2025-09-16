@@ -28,11 +28,11 @@ with mujoco.viewer.launch_passive(m, d) as viewer:
 
   # Go to desired position
   set_initial_pose(d, starting_position)
-  move_to_pose(m, d, viewer, desired_position, 2.0);
+  move_to_pose(m, d, viewer, desired_position, 2.0)
   
   
   # Hold Position
-  hold_position(m, d, viewer, 2.0);
+  hold_position(m, d, viewer, 2.0)
 
   # Return to starting position
-  move_to_pose(m, d, viewer, starting_position, 2.0);  
+  move_to_pose(m, d, viewer, starting_position, 2.0)  
