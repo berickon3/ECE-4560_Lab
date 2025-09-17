@@ -1,3 +1,4 @@
+import time
 import mujoco
 import mujoco.viewer
 from so101_mujoco_utils import set_initial_pose, move_to_pose, hold_position
@@ -36,3 +37,4 @@ with mujoco.viewer.launch_passive(m, d) as viewer:
 
   # Return to starting position
   move_to_pose(m, d, viewer, starting_position, 2.0)  
+  time.sleep(2.0)
