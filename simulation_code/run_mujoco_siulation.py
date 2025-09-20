@@ -25,8 +25,10 @@ desired_position = {
     'wrist_roll': 0.0,
     'gripper': 0.0           # 0-100 range
 }
-with mujoco.viewer.launch_passive(m, d) as viewer:
 
+time.sleep(4.0)
+with mujoco.viewer.launch_passive(m, d) as viewer:
+  time.sleep(2.0)
   # Go to desired position
   set_initial_pose(d, starting_position)
   move_to_pose(m, d, viewer, desired_position, 2.0)
