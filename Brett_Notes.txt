@@ -35,3 +35,7 @@ Verified that Zero position matches that shown in the course website
 Script for motion between start and desired position works, but still has jerky behavior
 Current best values
 P: 30, D: 5
+
+Homework 4 - Lab Portion
+
+    Mujoco - 

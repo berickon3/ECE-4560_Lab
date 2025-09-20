@@ -1,4 +1,3 @@
-import time
 from so101_utils import load_calibration, move_to_pose, hold_position, setup_motors
 
 # CONFIGURATION VARIABLES

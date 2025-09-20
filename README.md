@@ -20,3 +20,7 @@ Within VS Code
 Select the option that is .\venv\Scripts\python.exe which should be python 3.10.18
 
 This should fully set up the environment and python to be interpreted correctly. Scripts and commands should be run appended to 'uv run'
+
+Added MuJoCo to repository. Can be run using:
+    uv run -m mujoco.viewer
+    
