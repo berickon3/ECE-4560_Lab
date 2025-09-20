@@ -38,4 +38,8 @@ P: 30, D: 5
 
 Homework 4 - Lab Portion
 
-    Mujoco - 
+    LESSON LEARNED ON IMPORTS:
+        Sometimes switching branches or opening a new VS code editor will unselect your current virtual environment
+        Troubleshooting - 
+            uv sync
+            CTRL-SHIFT-P and Python: Select Interpreter
