@@ -13,7 +13,7 @@ from so101_inverse_kinematics import get_inverse_kinematics
 def offset_config(config):
     offset_dict = config.copy()
     offset_dict['shoulder_pan'] += 0.0
-    offset_dict['shoulder_lift'] += 8.0 # Example offset of 2 degrees
+    offset_dict['shoulder_lift'] += 0.0 # Example offset of 2 degrees
     offset_dict['elbow_flex'] -= 0.0 # Example offset of -4 degrees
     offset_dict['wrist_flex'] -= 0.0
     offset_dict['wrist_roll'] += 0.0

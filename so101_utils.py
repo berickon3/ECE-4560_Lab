@@ -8,6 +8,19 @@ from pathlib import Path
 import draccus
 import time
 
+from so101_inverse_kinematics import get_inverse_kinematics
+
+def offset_config(config):
+    offset_dict = config.copy()
+    offset_dict['shoulder_pan'] += 0.0
+    offset_dict['shoulder_lift'] += 0.0 # Example offset of 2 degrees
+    offset_dict['elbow_flex'] -= 0.0 # Example offset of -4 degrees
+    offset_dict['wrist_flex'] -= 0.0
+    offset_dict['wrist_roll'] += 0.0
+    offset_dict['gripper'] += 0.0
+    return offset_dict
+
+
 def load_calibration(ROBOT_NAME) -> None:
     """
     Helper to load calibration data from the specified file.
@@ -67,7 +80,8 @@ def move_to_pose(bus, desired_position, duration):
             position_dict[joint] = (1 - alpha) * p0 + alpha * pf
 
         # Send command
-        bus.sync_write("Goal_Position", position_dict, normalize=True)
+        calibrated_position = offset_config(position_dict);
+        bus.sync_write("Goal_Position", calibrated_position, normalize=True)
 
         # (Optional) Read back
         present_pos = bus.sync_read("Present_Position")
@@ -84,3 +98,54 @@ def hold_position(bus, duration):
             break
         bus.sync_write("Goal_Position", current_pos, normalize=True)
         time.sleep(0.02)  # 50 Hz loop
+
+
+def pick_up_block(bus, block_position, move_to_duration):
+    
+    # Move above block with gripper open
+    block_raised = block_position.copy()
+    block_raised[2] += 0.03  # raise block height amount
+    block_configuration_raised = get_inverse_kinematics(block_raised)
+    block_configuration_raised['gripper'] = 50
+    move_to_pose(bus, block_configuration_raised, move_to_duration)
+    
+    # Move down to block with gripper open
+    block_configuration = get_inverse_kinematics(block_position)
+    block_configuration['gripper'] = 50
+    move_to_pose(bus, block_configuration, 2.0)
+    
+    # Close gripper
+    block_configuration_closed = block_configuration.copy()
+    block_configuration_closed['gripper'] = 5
+    move_to_pose(bus, block_configuration_closed, 2.0)
+
+    # Lift up again
+    block_configuration_raised['gripper'] = 5
+    move_to_pose(bus, block_configuration_raised, 2.0)
+
+    return bus
+
+def place_block(bus, target_position, move_to_duration):
+    
+    # Move above target with gripper closed
+    block_raised = target_position.copy()
+    block_raised[2] += 0.03  # raise 1 inch
+    block_configuration_raised = get_inverse_kinematics(block_raised)
+    block_configuration_raised['gripper'] = 5
+    move_to_pose(bus, block_configuration_raised, move_to_duration)
+    
+    # Move down to block
+    block_configuration = get_inverse_kinematics(target_position)
+    block_configuration['gripper'] = 5
+    move_to_pose(bus, block_configuration, 1.0)
+    
+    # Open gripper 
+    block_configuration_open = block_configuration.copy()
+    block_configuration_open['gripper'] = 50
+    move_to_pose(bus, block_configuration_open, 1.0)
+    
+    # Return to raised position
+    block_configuration_raised['gripper'] = 50
+    move_to_pose(bus, block_configuration_raised, 1.0)
+
+    return bus
