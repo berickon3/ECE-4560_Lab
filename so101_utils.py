@@ -60,7 +60,7 @@ def setup_motors(calibration, PORT_ID):
             bus.write("P_Coefficient", motor, 10)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
             bus.write("I_Coefficient", motor, 0)
-            bus.write("D_Coefficient", motor, 32)
+            bus.write("D_Coefficient", motor, 18)
     return bus
 
 def move_to_pose_stepped(bus, desired_position, duration, step_alpha: float = 0.01):
@@ -117,17 +117,17 @@ def move_to_pose_stepped(bus, desired_position, duration, step_alpha: float = 0.
 
     # Ensure final exact target is sent (alpha might not hit 1.0 exactly)
     bus.sync_write("Goal_Position", calibrated_position, normalize=True)
-    
+
 def move_to_pose(bus, desired_position, duration, logging=False):
     start_time = time.time()
     starting_pose = bus.sync_read("Present_Position")
     offset_dict = offset_config(desired_position)
-    if logging:
-        # Initialize log fields
-        times = []
-        targets = []
-        actuals = []
-        joint_names = list(desired_position.keys())
+
+    # Initialize log fields
+    times = []
+    targets = []
+    actuals = []
+    joint_names = list(desired_position.keys())
     
     while True:
         t = time.time() - start_time
@@ -211,12 +211,11 @@ def pick_up_block(bus, block_position, move_to_duration, logging=False):
     alldata = pd.concat([alldata, df], ignore_index=True)
 
     if logging:
-        for df in alldata:
-            plot_data(df)
+        plot_data(alldata)
     
     return bus
 
-def place_block(bus, target_position, move_to_duration):
+def place_block(bus, target_position, move_to_duration, logging=False):
     
     # Move above target with gripper closed
     block_raised = target_position.copy()
@@ -239,12 +238,19 @@ def place_block(bus, target_position, move_to_duration):
     block_configuration_raised_final = block_configuration_raised_initial.copy()
     block_configuration_raised_final['gripper'] = 50
 
-    
-    move_to_pose(bus, block_configuration_raised_initial, move_to_duration)
-    move_to_pose(bus, block_configuration, move_to_duration)
-    move_to_pose(bus, block_configuration_open, move_to_duration)
-    move_to_pose(bus, block_configuration_raised_final, move_to_duration)
-
+    alldata = pd.DataFrame()
+        
+    df = move_to_pose(bus, block_configuration_raised_initial, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration_open, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration_raised_final, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    if logging:
+        plot_data(alldata)
+        
     return bus
 
 def plot_data(df):
