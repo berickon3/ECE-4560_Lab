@@ -57,10 +57,10 @@ def setup_motors(calibration, PORT_ID):
         for motor in bus.motors:
             bus.write("Operating_Mode", motor, OperatingMode.POSITION.value)
             # Set P_Coefficient to lower value to avoid shakiness (Default is 32)
-            bus.write("P_Coefficient", motor, 20)
+            bus.write("P_Coefficient", motor, 17)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
-            bus.write("I_Coefficient", motor, 10)
-            bus.write("D_Coefficient", motor, 18)
+            bus.write("I_Coefficient", motor, 0)
+            bus.write("D_Coefficient", motor, 0)
     return bus
 
 def move_to_pose_stepped(bus, desired_position, duration, step_alpha: float = 0.01):
@@ -156,7 +156,7 @@ def move_to_pose(bus, desired_position, duration, logging=False):
             targets.append([position_dict[j] for j in joint_names])
             actuals.append([present_pos[j] for j in joint_names])
         
-        time.sleep(0.02)  # 50 Hz loop
+        time.sleep(0.001)  # 1000 Hz loop
     if logging:
         # Convert to DataFrame
         df = pd.DataFrame({

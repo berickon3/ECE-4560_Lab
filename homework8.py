@@ -5,7 +5,7 @@ PORT_ID = "COM7" # REPLACE WITH YOUR PORT!
 ROBOT_NAME = "Jack_the_Gripper" # REPLACE WITH YOUR ROBOT NAME! 
 
 # --- Specified Parameters ---
-move_time = 2  # seconds to reach desired position
+move_time = 0.5  # seconds to reach desired position
 
 # ------------------------
 calibration = load_calibration(ROBOT_NAME)
