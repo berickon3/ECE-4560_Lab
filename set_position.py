@@ -1,7 +1,7 @@
 from so101_utils import load_calibration, move_to_pose, hold_position, setup_motors
 
 # CONFIGURATION VARIABLES
-PORT_ID = "COM7" # REPLACE WITH YOUR PORT! 
+PORT_ID = "COM4" # REPLACE WITH YOUR PORT! 
 ROBOT_NAME = "Jack_the_Gripper" # REPLACE WITH YOUR ROBOT NAME! 
 
 # --- Specified Parameters ---
@@ -16,7 +16,7 @@ desired_position = {
     'elbow_flex': 0.0,
     'wrist_flex': 0.0,
     'wrist_roll': 0.0,
-    'gripper': 50.0           # 0-100 range
+    'gripper': 0           # 0-100 range
 }
 move_time = 2  # seconds to reach desired position
 hold_time = 20  # total time to hold at 
