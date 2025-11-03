@@ -11,10 +11,10 @@ The gripper command takes values of 0-100, while the other joints take values of
 the settings specified in the bus initialization.
 '''
 desired_position = {
-    'shoulder_pan': 0.0,   # degrees
-    'shoulder_lift': 0.0,
-    'elbow_flex': 0.0,
-    'wrist_flex': 0.0,
+    'shoulder_pan': 90,   # degrees
+    'shoulder_lift': 12.0,
+    'elbow_flex': -3.0,
+    'wrist_flex': -3.0,
     'wrist_roll': 0.0,
     'gripper': 50.0           # 0-100 range
 }
