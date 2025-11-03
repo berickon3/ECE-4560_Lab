@@ -43,3 +43,6 @@ Homework 4 - Lab Portion
         Troubleshooting - 
             uv sync
             CTRL-SHIFT-P and Python: Select Interpreter
+
+Homework 8:
+    Working on getting Jack_the_Gripper to be a bit more stable. Messing with PID values helps.

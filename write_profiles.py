@@ -1,18 +1,18 @@
 import serial
 import time
 
-PORT = "/dev/ttyUSB0"   # e.g., "COM5" on Windows
+PORT = "COM7"   # e.g., "COM5" on Windows
 BAUD = 1_000_000
 IDS  = [1,2,3,4,5,6]
 
 # SO-101 starting values (counts)
 PROFILES = {
-    1: {"speed":400, "accel":150},
-    2: {"speed":400, "accel":150},
-    3: {"speed":600, "accel":200},
-    4: {"speed":800, "accel":250},
-    5: {"speed":900, "accel":300},
-    6: {"speed":600, "accel":200},
+    1: {"speed":0, "accel":1000},
+    2: {"speed":0, "accel":1000},
+    3: {"speed":0, "accel":1000},
+    4: {"speed":0, "accel":1000},
+    5: {"speed":0, "accel":1000},
+    6: {"speed":0, "accel":1000},
 }
 
 # Control table (Feetech STS3215 family, protocol 1.0-like)

@@ -7,6 +7,9 @@ from lerobot.motors.feetech import (
 from pathlib import Path
 import draccus
 import time
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 from so101_inverse_kinematics import get_inverse_kinematics
 
@@ -54,13 +57,13 @@ def setup_motors(calibration, PORT_ID):
         for motor in bus.motors:
             bus.write("Operating_Mode", motor, OperatingMode.POSITION.value)
             # Set P_Coefficient to lower value to avoid shakiness (Default is 32)
-            bus.write("P_Coefficient", motor, 20)
+            bus.write("P_Coefficient", motor, 10)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
             bus.write("I_Coefficient", motor, 0)
-            bus.write("D_Coefficient", motor, 5)
+            bus.write("D_Coefficient", motor, 32)
     return bus
 
-def move_to_pose(bus, desired_position, duration, step_alpha: float = 0.01):
+def move_to_pose_stepped(bus, desired_position, duration, step_alpha: float = 0.01):
     """
     Move the arm from current position to `desired_position` over `duration` seconds.
 
@@ -115,6 +118,56 @@ def move_to_pose(bus, desired_position, duration, step_alpha: float = 0.01):
     # Ensure final exact target is sent (alpha might not hit 1.0 exactly)
     bus.sync_write("Goal_Position", calibrated_position, normalize=True)
     
+def move_to_pose(bus, desired_position, duration, logging=False):
+    start_time = time.time()
+    starting_pose = bus.sync_read("Present_Position")
+    offset_dict = offset_config(desired_position)
+    if logging:
+        # Initialize log fields
+        times = []
+        targets = []
+        actuals = []
+        joint_names = list(desired_position.keys())
+    
+    while True:
+        t = time.time() - start_time
+        if t > duration:
+            break
+
+        # Interpolation factor [0,1] (make sure it doesn't exceed 1)
+        alpha = min(t / duration, 1)
+
+        # Interpolate each joint
+        position_dict = {}
+        for joint in offset_dict:
+            p0 = starting_pose[joint]
+            pf = offset_dict[joint]
+            position_dict[joint] = (1 - alpha) * p0 + alpha * pf
+            
+        # Store Actual Position
+        present_pos = bus.sync_read("Present_Position")
+        
+        # Send command
+        bus.sync_write("Goal_Position", position_dict, normalize=True)
+        
+        if logging:
+            # Log time, target, and actual
+            times.append(time.time())
+            targets.append([position_dict[j] for j in joint_names])
+            actuals.append([present_pos[j] for j in joint_names])
+        
+        time.sleep(0.02)  # 50 Hz loop
+    if logging:
+        # Convert to DataFrame
+        df = pd.DataFrame({
+            "time": times,
+            **{f"target_{j}": [t[i] for t in targets] for i, j in enumerate(joint_names)},
+            **{f"actual_{j}": [a[i] for a in actuals] for i, j in enumerate(joint_names)},
+        })
+        return df
+    else:
+        return None
+
 def hold_position(bus, duration):
     current_pos = bus.sync_read("Present_Position")
     start_time = time.time()
@@ -125,31 +178,42 @@ def hold_position(bus, duration):
         bus.sync_write("Goal_Position", current_pos, normalize=True)
         time.sleep(0.02)  # 50 Hz loop
 
-
-def pick_up_block(bus, block_position, move_to_duration):
+def pick_up_block(bus, block_position, move_to_duration, logging=False):
+    # Calculate all configurations
     
-    # Move above block with gripper open
+    ## Move above block with gripper open
     block_raised = block_position.copy()
     block_raised[2] += 0.03  # raise block height amount
-    block_configuration_raised = get_inverse_kinematics(block_raised)
-    block_configuration_raised['gripper'] = 50
-    move_to_pose(bus, block_configuration_raised, move_to_duration)
-    
-    
-    # Move down to block with gripper open
+    block_configuration_raised_initial = get_inverse_kinematics(block_raised)
+    block_configuration_raised_initial['gripper'] = 50
+
+    ## Move down to block with gripper open
     block_configuration = get_inverse_kinematics(block_position)
     block_configuration['gripper'] = 50
-    move_to_pose(bus, block_configuration, 2.0)
     
-    # Close gripper
+    ## Close gripper
     block_configuration_closed = block_configuration.copy()
     block_configuration_closed['gripper'] = 5
-    move_to_pose(bus, block_configuration_closed, 2.0)
+    
+    ## Lift up again
+    block_configuration_raised_final = get_inverse_kinematics(block_raised)
+    block_configuration_raised_final['gripper'] = 5
 
-    # Lift up again
-    block_configuration_raised['gripper'] = 5
-    move_to_pose(bus, block_configuration_raised, 2.0)
+    alldata = pd.DataFrame()
+    
+    df = move_to_pose(bus, block_configuration_raised_initial, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration_closed, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
+    df = move_to_pose(bus, block_configuration_raised_final, move_to_duration, logging=logging)
+    alldata = pd.concat([alldata, df], ignore_index=True)
 
+    if logging:
+        for df in alldata:
+            plot_data(df)
+    
     return bus
 
 def place_block(bus, target_position, move_to_duration):
@@ -157,22 +221,63 @@ def place_block(bus, target_position, move_to_duration):
     # Move above target with gripper closed
     block_raised = target_position.copy()
     block_raised[2] += 0.03  # raise 1 inch
-    block_configuration_raised = get_inverse_kinematics(block_raised)
-    block_configuration_raised['gripper'] = 5
-    move_to_pose(bus, block_configuration_raised, move_to_duration)
+    block_configuration_raised_initial = get_inverse_kinematics(block_raised)
+    block_configuration_raised_initial['gripper'] = 5
+
     
     # Move down to block
     block_configuration = get_inverse_kinematics(target_position)
     block_configuration['gripper'] = 5
-    move_to_pose(bus, block_configuration, 1.0)
+
     
     # Open gripper 
     block_configuration_open = block_configuration.copy()
     block_configuration_open['gripper'] = 50
-    move_to_pose(bus, block_configuration_open, 1.0)
+
     
     # Return to raised position
-    block_configuration_raised['gripper'] = 50
-    move_to_pose(bus, block_configuration_raised, 1.0)
+    block_configuration_raised_final = block_configuration_raised_initial.copy()
+    block_configuration_raised_final['gripper'] = 50
+
+    
+    move_to_pose(bus, block_configuration_raised_initial, move_to_duration)
+    move_to_pose(bus, block_configuration, move_to_duration)
+    move_to_pose(bus, block_configuration_open, move_to_duration)
+    move_to_pose(bus, block_configuration_raised_final, move_to_duration)
 
     return bus
+
+def plot_data(df):
+
+    zero_configuration = {
+        'shoulder_pan': 0.0,
+        'shoulder_lift': 0.0,
+        'elbow_flex': 0.00,
+        'wrist_flex': 0.0,
+        'wrist_roll': 0.0,
+        'gripper': 0          
+    }
+    joint_limits = {
+        'shoulder_pan': (-1.919, 1.919),
+        'shoulder_lift': (-1.74, 1.74),
+        'elbow_flex': (-1.69, 1.69),
+        'wrist_flex': (-1.65, 1.65),
+        'wrist_roll': (-2.74, 2.84),
+        'gripper': (0, 100)
+    }
+    joint_names = [j for j in zero_configuration.keys()]
+    joint_limits = {j: (np.degrees(lim[0]), np.degrees(lim[1])) for j, lim in joint_limits.items()}
+
+    # Plot target vs actual for each joint
+    plt.figure(figsize=(10, 2 * len(joint_names)))
+    for i, j in enumerate(joint_names):
+        plt.subplot(len(joint_names), 1, i + 1)
+        plt.plot(df["time"], df[f"target_{j}"], label=f"Target {j}")
+        plt.plot(df["time"], df[f"actual_{j}"], label=f"Actual {j}", linestyle="--")
+        plt.ylabel("Position")
+        plt.legend(loc="upper right")
+        plt.ylim(joint_limits[f"{j}"][0], joint_limits[f"{j}"][1])
+    plt.xlabel("Time (s)")
+    plt.suptitle("Target vs Actual Joint Positions")
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.show()
