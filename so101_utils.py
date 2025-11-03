@@ -17,7 +17,7 @@ def offset_config(config):
     offset_dict = config.copy()
     offset_dict['shoulder_pan'] += 0.0
     offset_dict['shoulder_lift'] += 6 # Example offset of 2 degrees
-    offset_dict['elbow_flex'] -= 4 # Example offset of -4 degrees
+    offset_dict['elbow_flex'] += 4 # Example offset of -4 degrees
     offset_dict['wrist_flex'] -= 5.0
     offset_dict['wrist_roll'] += 0.0
     offset_dict['gripper'] -= 10.0
@@ -60,7 +60,7 @@ def setup_motors(calibration, PORT_ID):
             # Set P_Coefficient to lower value to avoid shakiness (Default is 32)
             bus.write("P_Coefficient", motor, 10)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
-            bus.write("I_Coefficient", motor, 0)
+            bus.write("I_Coefficient", motor, 5)
             bus.write("D_Coefficient", motor, 5)
     return bus
 
@@ -130,10 +130,15 @@ def move_to_pose(bus, desired_position, duration, logging=False):
     actuals = []
     joint_names = list(desired_position.keys())
     
+    threshold = 0.4
+    
     while True:
         t = time.time() - start_time
-        if t > duration:
-            time.sleep(0.2)
+        positions = bus.sync_read("Present_Position")
+        error = {motor: abs(positions[motor] - offset_dict[motor]) for motor in bus.motors}
+        error['gripper'] = 0  # Ignore gripper error for termination condition
+        print(error)
+        if t > duration and all(e < threshold for e in error.values()):
             break
 
         # Interpolation factor [0,1] (make sure it doesn't exceed 1)

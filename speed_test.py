@@ -1,7 +1,7 @@
 from so101_utils import load_calibration, setup_motors, offset_config, move_to_pose
 import time
 # CONFIGURATION VARIABLES
-PORT_ID = "COM7" # REPLACE WITH YOUR PORT! 
+PORT_ID = "COM4" # REPLACE WITH YOUR PORT! 
 ROBOT_NAME = "Jack_the_Gripper" # REPLACE WITH YOUR ROBOT NAME! 
 
 desired_position = {
@@ -18,7 +18,7 @@ bus = setup_motors(calibration, PORT_ID)
 starting_pose = bus.sync_read("Present_Position")
 offset_dict = offset_config(desired_position)
 bus.sync_write("Goal_Position", offset_dict, normalize=True)
-threshold = 0.1  
+threshold = 0.17  
 while True:
     positions = bus.sync_read("Present_Position")
     error = {motor: abs(positions[motor] - offset_dict[motor]) for motor in bus.motors}
