@@ -16,9 +16,9 @@ from so101_inverse_kinematics import get_inverse_kinematics
 def offset_config(config):
     offset_dict = config.copy()
     offset_dict['shoulder_pan'] += 0.0
-    offset_dict['shoulder_lift'] += 12 # Example offset of 2 degrees
-    offset_dict['elbow_flex'] -= 3 # Example offset of -4 degrees
-    offset_dict['wrist_flex'] -= 3
+    offset_dict['shoulder_lift'] += 4 # Example offset of 2 degrees
+    offset_dict['elbow_flex'] -= 0 # Example offset of -4 degrees
+    offset_dict['wrist_flex'] -= 0
     offset_dict['wrist_roll'] += 0.0
     offset_dict['gripper'] += 0.0
     return offset_dict
@@ -57,10 +57,10 @@ def setup_motors(calibration, PORT_ID):
         for motor in bus.motors:
             bus.write("Operating_Mode", motor, OperatingMode.POSITION.value)
             # Set P_Coefficient to lower value to avoid shakiness (Default is 32)
-            bus.write("P_Coefficient", motor, 17)
+            bus.write("P_Coefficient", motor, 10)
             # Set I_Coefficient and D_Coefficient to default value 0 and 32
             bus.write("I_Coefficient", motor, 0)
-            bus.write("D_Coefficient", motor, 0)
+            bus.write("D_Coefficient", motor, 5)
     return bus
 
 def move_to_pose_stepped(bus, desired_position, duration, step_alpha: float = 0.01):

@@ -18,8 +18,8 @@ desired_position = {
     'wrist_roll': 0.0,
     'gripper': 50.0           # 0-100 range
 }
-move_time = 0.5  # seconds to reach desired position
-hold_time = 2.0  # total time to hold at 
+move_time = 2  # seconds to reach desired position
+hold_time = 20  # total time to hold at 
 
 # ------------------------
 calibration = load_calibration(ROBOT_NAME)
