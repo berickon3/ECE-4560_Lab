@@ -5,14 +5,15 @@ PORT = "COM7"   # e.g., "COM5" on Windows
 BAUD = 1_000_000
 IDS  = [1,2,3,4,5,6]
 
+speed_limit = 0
 # SO-101 starting values (counts)
 PROFILES = {
-    1: {"speed":0, "accel":1000},
-    2: {"speed":0, "accel":1000},
-    3: {"speed":0, "accel":1000},
-    4: {"speed":0, "accel":1000},
-    5: {"speed":0, "accel":1000},
-    6: {"speed":0, "accel":1000},
+    1: {"speed":speed_limit, "accel":1000},
+    2: {"speed":speed_limit, "accel":1000},
+    3: {"speed":speed_limit, "accel":1000},
+    4: {"speed":speed_limit, "accel":1000},
+    5: {"speed":speed_limit, "accel":1000},
+    6: {"speed":speed_limit, "accel":1000},
 }
 
 # Control table (Feetech STS3215 family, protocol 1.0-like)
